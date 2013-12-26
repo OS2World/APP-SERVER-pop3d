@@ -1,0 +1,132 @@
+Pop3d is a mailbox server based on the Internet Standard
+STD 53, Post Office Protocol Version 3. The
+server requires user and password verification before a
+maildrop can be opened. The server can retrieve and delete
+messages from the maildrop on a per-message basis.
+Pop3d currently supports the following POP3 commands; the
+commands are case independent.
+
+Command			  Description
+USER			specify user for maildrop access
+PASS			specify password for maildrop access
+APOP			specify user and hashed password for maildrop access
+STAT			give message count and size of maildrop
+LIST			list size of individual messages
+RETR			retrieve a message
+DELE			delete a message
+NOOP			do nothing, return a positive response
+LAST			give highest message number accessed
+RSET			unmark messages marked for deletion
+TOP			retrieve part of a message
+UIDL			retrieve the unique ID for a message
+QUIT			terminate session
+The remaining optional commands specified in STD 53 (RPOP) is 
+not implemented.
+
+The server runs in "inetd" mode by default or with the -i option
+and it expects to be started by some server process such as inetd.
+If the -b option is given, it is run as a standalone server in the
+background (and should NOT be listed in inetd.lst or inetd.conf).  
+Pop3d listens for TCP requests on port 110 or on "portno" if the
+-p portno option is given.
+The -h option prints usage and command line options.
+
+----------------
+
+Installation.
+
+You must decide to run pop3d from inetd or standalone.
+
+FOR INETD INSTALLATIONS:
+- Add an entry for pop3d in the file %ETC%\inetd.lst
+  (or %ETC%\inetd.cnf for ported version of inetd).
+  It should look like this:
+
+  pop3 tcp d:\tcpip\bin\pop3d.exe -d
+  or   
+  pop3 stream tcp nowait root d:\tcpip\bin\pop3d -d %s
+
+FOR STANDALONE INSTALLATIONS:
+- Be sure that inetd isn't listening for pop3 connections already.
+- Then start the daemon running now by hand:
+  d:\tcpip\bin\pop3d.exe -b
+- Added the daemon to a startup script.
+  Use the same command as given above:  d:\tcpip\bin\pop3d.exe -b
+
+Note: in standalone installation pop3d spawns the separate child
+process for each connection.
+
+----------------
+
+Command line options:
+
+  -h       Help message.
+  -d       Debug logging mode (to the %ETC%\pop3d.log file)
+  -s       Enable logging to syslog.
+  -i       Inetd mode (default).
+  -b       Background daemon mode.
+  -p port  Listening port number.
+
+----------------
+
+User/password/mailbox configuration.
+
+Two methods are currently supported for USER/PASS verification.
+
+1. If the MAILBOX environment variable is defined, the
+name for mailbox directory for user USERNAME constructs
+as %MAILBOX%\username. The encrypted passwords for users placed in
+UNIX-like %ETC%\passwd file:
+
+#User:Password
+username:2c0RlCFZHDMEA
+postmaster:465Kf4fXaTr9s
+unknown:5a5SZFHFTF2mE
+
+The name of this file may be redefined by setting the 
+PASSWORDS environment variable, for example
+
+SET PASSWORDS=d:\tcpip\pop3d\passwd
+
+Use admin.exe utility to create/change this file.
+
+2. All information contains in old-style %ETC%\mailaddr file:
+
+#User           Directory       Password
+username    d:\mail\username    secret
+postmaster  d:\mail\postmaster  big_secret
+unknown     d:\mail\bad_mail    very_bad
+
+The passwords are not enrypted.
+
+
+   For APOP verification the MAILBOX environment variable must be
+defined and unencrypted passwords must be placed in %ETC%\apop.cnf:
+
+#User:Password
+username:secret
+postmaster:big_secret
+unknown:very_bad
+
+----------------
+
+Mail delivering.
+
+mailrcv.exe is the mail delivering program for OS/2 sendmail.
+It's necessary to edit local mailer section in the file 
+%ETC%\sendmail.cf:
+
+Mlocal, P=d:\tcpip\pop3d\mailrcv.exe, F=lsmDFP,  S=10, R=20, A=__path__ $u
+
+where __path__ is the name of MAILBOX directory (when ended by '\'
+character) or the full name of %ETC%\mailaddr file. Examples:
+
+Mlocal, P=d:\tcpip\pop3d\mailrcv.exe, F=lsDFP,  S=10, R=20, A=d:\mail\ $u
+or
+Mlocal, P=d:\tcpip\pop3d\mailrcv.exe, F=lsDFP,  S=10, R=20, A=d:\mptn\etc\mailaddr $u
+
+An editor that prevents TAB characters from expanding have to be used
+(for example E).
+"unknown" is the reserved user name for delivering all messages,
+addressed to unknown users.
+
