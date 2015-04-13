@@ -1,0 +1,17 @@
+----------------------------------------------------------------------------
+ README.tacacs  V0.1 15-Jun-1997 by Filippo Grassilli <phil@hyppo.com>
+----------------------------------------------------------------------------
+Added support for tacacs authentication.
+I use it to centralize access authentication and to unify the logging on user's
+activity.
+
+To compile just define TACACS_AUTH; if you desire put inside the source the
+name of your server (otherwise it reads each time /etc/xtacacs.server).
+I used extended tacacs message XTA_LOGIN setting 110 as destination port,
+if required customize it.
+
+For suggestions and bug reports:
+	Filippo Grassilli
+	phil@hyppo.com
+
+

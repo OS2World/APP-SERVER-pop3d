@@ -1,0 +1,26 @@
+
+23Jun97 - Derric Scott
+
+Virtual hosting software was added to allow different directories to
+be read depending upon what IP (virtual) the socket was connected to.
+Note that, at this time, this code has only been minimally tested by
+me - I am not setup to use or test it.
+
+To use it:
+	add -DVIRTUAL in the Makefile,
+	edit virtual.c to put in your list of virtual IPs,
+	create your spool and work directories properly (same as
+		regular work directory in 1.005d).
+
+Note that modifying the deliver mechanism to drop incoming mail
+into the spool directories is out of scope for pop3d.  The request for
+this function was from: peterd@datady.com.  He may have the "deliver"
+software needed and other pointers.
+
+To-do list:
+
+Modify it so that it reads from a config file rather than from a hardcoded
+	structure in virtual.c.  This currently requires a re-compile each
+	time a new virtual IP is added.
+
+

@@ -1,0 +1,287 @@
+
+-----------------------------------------------
+- README.linux (Oct 27 1998) - Derric Scott
+- VERSION:  1.006c
+------------------------------------------------
+
+See important notes below in 1.005d and in the README.INSTALL about
+pop3d work directory creation and permissions.
+
+Modified permissions of the /usr/tmp/.pop directory to NOT include write
+permission from Glynn Clements <glynn@sensei.co.uk>.
+
+Added patch to syslog better error message for mailbox permission from
+Len Day <led@cyberdiner.com>.
+
+Added patch from Vladislav Bjelic <wlad@opennet.org> to fix a bug
+in UIDL code where the field_msg[i].id was not being initialized
+in folder.c as it should have been.
+
+Added "nice" arg to the "-h" help info.
+
+
+-----------------------------------------------
+- README.linux (Jul 17 1998) - Derric Scott
+- VERSION:  1.006b
+------------------------------------------------
+
+See important notes below in 1.005d and in the README.INSTALL about
+pop3d work directory creation and permissions.
+
+Added a sleep(FAILPASS_DELAY) after failed password attempts to
+prevent password guessing attacks.  FAILPASS_DELAY is in pop3.h for
+tuning.
+
+Added Glynn Clements <glynn@sensei.co.uk> to get the IP address properly
+for logging when NOT run as standalone.  Also his patch to fix a
+close/fclose mistake.  And his patch to add stdio.h to virtual.c
+
+Experimenting with a "nice" command to possibly ease the impact
+of the initial loading/copying of large files into the work area.  Use
+"-n" option to use a nice value, such as: "in.pop3d -b -n10" to have the
+the children POP processes "nice" themselves by 10.  Let me know if
+this does any good or not...
+
+
+-----------------------------------------------
+- README.linux (Jul 01 1998) - Derric Scott
+- VERSION:  1.006a
+------------------------------------------------
+
+Installed patch from Glynn Clements <glynn@sensei.co.uk> to solve
+some (all?) of the known orphaned lockfile ("Mail being read already")
+problems.  Most of these changes were also submitted by Paul C. Bryan
+<pbryan@intouch.ca> but had not been incorporated yet (my fault there).
+
+The standalone server mode in 1.006 below has been running with no
+problem here since March, so I'm making it part of the standard
+distribution.  This version will compile with the STANDALONE code in
+place, but the behavior will default to inetd mode.  While I have tested
+STANDALONE mode a lot, I've not tested the inetd mode much since them.
+I personally like the STANDALONE mode much more.
+
+
+-----------------------------------------------
+- README.linux (Mar 24 1998) - Derric Scott
+- VERSION:  1.006
+------------------------------------------------
+
+I've added basic standalone server support so that it can run without
+inetd.  Many have asked for this, thinking it will speed up the process.
+It should be faster due to:
+	1. no tcpd (wrappers) call before hand (if you had it that way)
+	2. only a "fork" - no "exec" to read program off the disk
+It remains to be seen how much the speed improves.
+
+It has these command line options:
+	-d		produce the debug file
+	-i		run in inetd mode (the defaul method as well).
+	-b		run in background (standalone) mode.
+	-p port		port to listen for connections on.
+
+THIS VERSION SHOULD BE CONSIDERED VERY EXPERMENTAL AT THIS TIME.  I've
+begun running it on my production server today and have had no problems
+since the last modification.
+
+
+-----------------------------------------------
+- README.linux (Mar 23 1998) - Derric Scott
+- VERSION:  1.005m
+------------------------------------------------
+
+Added parameter "ACCT_SUSP_STR" and the code to check for certain shells
+in the /etc/passwd authorization.  If this shell is there, then the
+user is "suspended" and cannot log in.  (I was doing this by setting
+the owner of the file to root, but the new sendmail 8.8 using procmail as
+delivery agent doesn't like that and moves the file to BOGUS and undoes
+the root ownership! :(.  This code scans the first characters of the user's
+shell to match the above string.  Longer shell names can be used for
+different types of suspension scripts/programs.
+
+Added simple #ifdef QMAIL to avoid an undefined variable error at
+folder.c line 126.
+
+-----------------------------------------------
+- README.linux (Sep 8 1997) - Derric Scott
+- VERSION:  1.005l
+------------------------------------------------
+
+Major fix is to the UIDL code - there were instances where the unique
+ID values would change as messages were deleted.  This confused Eudora
+which used the values to remember which messages had been read or not.
+Thanks to glynn@sensei.co.uk (Glynn Clements) for the quick patch.
+
+-----------------------------------------------
+- README.linux (Aug 7 1997) - Derric Scott
+- VERSION:  1.005k
+------------------------------------------------
+
+Included a script by Ian Kinner (ian@llc.net) to remove stale lock/work
+files which are often left when a client aborts.  It is named "rm_stale.sh"
+and if yow and to run it you should put it into root's crontab
+("crontab -e").
+
+Included patches from techs@obfuscation.org and Brendan (synk@swcp.com)
+to do ~/Mailbox QMAIL type mail spool files instead of /usr/spool/mail
+type mailboxes.  To use these, there is a "-DQMAIL" compile flag in the
+Makefile.
+
+-----------------------------------------------
+- README.linux (July 10 1997) - Derric Scott
+- VERSION:  1.005j
+------------------------------------------------
+
+Put patch in UIDL support to do MD5 hash instead of the MSG ID.  Patch
+by: glynn@sensei.co.uk (Glynn Clements).  This hopefully fixes the
+problem Eudora has with using the Msg ID as UIDL.  Remove Eudora's
+"lmos.dat" if problems persist with this version.
+
+
+-----------------------------------------------
+- README.linux (June 23 1997) - Derric Scott
+- VERSION:  1.005i
+------------------------------------------------
+
+DON'T USE THIS VERSION - USE OLDER 'g' OR 'j' OR LATER VERSION.
+There are known problems with this UIDL code and Eudora that cause
+Eudora to GPF or perform "illegal operations" and crash.  If this
+happens, remove Eudora's "lmos.dat" file and use version 'g' or
+'j' or later.
+
+Dropped in TACACS authentication code by Filippo Grassilli <phil@hyppo.com>.
+See README.tacacs for details.
+
+Added VIRTUAL host software.  See the README.virtual for details.
+
+
+------------------------------------------------
+- README.linux (April 29 1997) - Derric Scott
+- VERSION:  1.005h
+------------------------------------------------
+
+DON'T USE THIS VERSION - USE OLDER 'g' OR 'j' OR LATER VERSION.
+There are known problems with this UIDL code and Eudora that cause
+Eudora to GPF or perform "illegal operations" and crash.  If this
+happens, remove Eudora's "lmos.dat" file and use version 'g' or
+'j' or later.
+
+Added nroff man page provided by Volker Schmidt
+<volker@Illuminatus.MZ.Rhein-Main.DE>.
+
+APOP and UIDL support added by: glynn@sensei.co.uk (Glynn Clements)
+
+
+------------------------------------------------
+- README.linux (April 28 1997) - Derric Scott
+- VERSION:  1.005g
+------------------------------------------------
+
+In this version, deleted the valid.o and removed the need for it.
+
+Modified util.c to use an /etc/passwd password if it exists, EVEN IF
+compiled with SHADOWPWD option (patches from: Fabio Coatti,
+cova@felix.unife.it.
+
+Removed a piece of code in util.c that called "pw_auth" if the shadow
+password started with an '@' and it used the rest of the shadow password
+as the command to use to authorize it.  This is an external auth routine.
+Does anyone use this?  It seemed unnecessary... comments?
+
+------------------------------------------------
+- README.linux (April 27 1997) - Derric Scott
+- VERSION:  1.005f
+------------------------------------------------
+
+Changed a strcpy to strncpy due to a security notice on bugtraq (just a
+notice, no exploit or proof of a real problem - appeared to be ok due
+to length checking in main anyway...)
+
+Changed the input to strip "@domain" off the username if it is there.  A
+lot of our customers seem to put their e-mail address in for their username
+and this stopped a lot of trouble calls.
+
+------------------------------------------------
+- README.linux (January 19 1996) - Derric Scott
+- VERSION:  1.005e
+------------------------------------------------
+
+This version fixes the TOP command so that the linecount is checked
+for properly and is allowd no exist.  If it isn't there, it simply
+issues 10 lines of the message rather than an error.  Thanks for these
+changes go to:
+	Henrik Seidel, henrik@satchmo.physik.TU-Berlin.DE,
+	http://satchmo.physik.tu-berlin.de/~henrik/
+
+------------------------------------------------
+- README.linux (December 11 1996) - Derric Scott
+------------------------------------------------
+
+I've made several large scale changes to this version - 1.005d.
+
+I've removed several non-standard commands, some of which *may*
+have been a security concern (it allowed the mailbox filename to be
+arbitrarily set).
+
+I also changed the default POP spool area to "/var/tmp/.pop" -
+you need to create that and give it "sticky" permissions:
+	mkdir /usr/tmp/.pop
+	chmod 1777 /usr/tmp/.pop
+I put this on a separate partition (my main motivation for moving it
+from the default /tmp).
+
+Most importantly, I've patched it to fix the major Netscape problem
+of leaving large files and copying them back onto the spool file.
+
+Also, if run with the "-d" option, it will stream to a log file in
+the spool area.  This file can get *very* large.
+
+------------------------------------------------
+- README.linux (October 06 1996) - Derric Scott
+------------------------------------------------
+I took the in.popd server modified by Jerry Ablan and Chris Bondy (see
+the original README.linux included below) and added a few fixes.  I'll
+list them briefly below.  I contacted them in the Summer of 1995 and
+neither of them were actively maintaining it.  I started from:
+  ftp://sunsite.unc.edu/pub/Linux/system/Mail/pop/pop3d+shadow+elf.tar.gz
+and modified that source.
+
+That source was numbered as version 1.004shadow and I bumped that to
+1.005.
+
+E-mail comments to me at dtscott@scott.net.
+
+Derric Scott.
+
+----
+1.005a	01-04-96 [dts]	change mktemp to mkstemp to avoid security
+			   hole with mktemp (timing attack).
+1.005b	02-14-96 [dts]	added syslogging success and failed attempts
+	07-03-96 [dts]	force lower case login names
+1.005c	07-28-96 [dts]	added some debug and catch for SIGPIPE that
+			   aborted downloads were causing (leaving files
+			   in /tmp) - a Netscape E-mail problem.
+
+
+--------------------------------------------
+- Original README.linux (July 31 1995).
+--------------------------------------------
+This is the current pop3d server software modified for shadow passwords. I
+couldn't find shadow pop3d anywhere so I made one. Here it is.
+
+This will install the server into /usr/sbin/in.popd. If you want it
+somewhere else, edit the makefile.
+
+
+email comments to munster@cboe.com.
+
+--
+Jerry Ablan
+Chicago Board Options Exchange
+
+Modified for kernels 1.3.x + gcc2.7.0 + ELF + Shadow-3.3.2 
+( if you have a.out based system,  copy valid.o,  pwauth.h,  shadow.h
+  from your /usr/src/shadow-x.x.x dir and place them in pop3 source dir )
+
+
+Chris Bondy
+Temp@Temptation.interlog.com
